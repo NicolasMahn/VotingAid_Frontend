@@ -12,17 +12,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      env:
-        CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
-        CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
-        OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-      env:
-        CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
-        CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
-        OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
@@ -31,12 +23,14 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME2 }}/voting_aid:latest
-        build-args: |
-          CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
-          CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+      run: |
+        docker build \
+          --build-arg CHROMADB_HOST=${{ secrets.CHROMADB_HOST }} \
+          --build-arg CHROMADB_PORT=${{ secrets.CHROMADB_PORT }} \
+          --build-arg OPENAI_KEY=${{ secrets.OPENAI_KEY }} \
+          -t ${{ secrets.DOCKER_USERNAME }}/voting_aid:latest .
+        docker push ${{ secrets.DOCKER_USERNAME }}/voting_aid:latest
+      env:
+        CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
+        CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
+        OPENAI_KEY: ${{ secrets.OPENAI_KEY }}

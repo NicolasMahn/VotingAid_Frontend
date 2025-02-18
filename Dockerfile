@@ -13,16 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
-# Set build arguments for secrets
-ARG CHROMADB_HOST
-ARG CHROMADB_PORT
-ARG OPENAI_KEY
-
-# Set environment variables for secrets
-ENV CHROMADB_HOST=${CHROMADB_HOST}
-ENV CHROMADB_PORT=${CHROMADB_PORT}
-ENV OPENAI_KEY=${OPENAI_KEY}
-
 # Expose the port the app runs on
 EXPOSE 80
 
