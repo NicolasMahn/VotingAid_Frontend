@@ -28,8 +28,8 @@ jobs:
           --build-arg CHROMADB_HOST=${{ secrets.CHROMADB_HOST }} \
           --build-arg CHROMADB_PORT=${{ secrets.CHROMADB_PORT }} \
           --build-arg OPENAI_KEY=${{ secrets.OPENAI_KEY }} \
-          -t ${{ secrets.DOCKER_USERNAME }}/voting_aid:latest .
-        docker push ${{ secrets.DOCKER_USERNAME }}/voting_aid:latest
+          -t ${{ secrets.DOCKER_USERNAME2 }}/voting_aid:latest .
+        docker push ${{ secrets.DOCKER_USERNAME2 }}/voting_aid:latest
       env:
         CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
         CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
