@@ -36,7 +36,7 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_USERNAME2 }}/voting_aid:latest
-      env:
-        CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
-        CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
-        OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+        build-args: |
+          CHROMADB_HOST: ${{ secrets.CHROMADB_HOST }}
+          CHROMADB_PORT: ${{ secrets.CHROMADB_PORT }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
