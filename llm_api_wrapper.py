@@ -33,7 +33,7 @@ model_owner = {
                "learnlm-1.5-pro-experimental"]
 }
 
-DEFAULT_MODEL = "gemini-2.0-flash-lite-preview-02-05"
+DEFAULT_MODEL = "gpt-4o-mini"
 
 def count_context_length(prompt: str, model: str = "default") -> int:
     if model not in MAX_TOKENS or model == "default":
