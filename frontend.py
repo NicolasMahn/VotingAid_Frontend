@@ -1,12 +1,15 @@
 import json
 import threading
+from pydoc import classname
+
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, MATCH
 import os
 from flask import send_from_directory
 
-from voting_aid_methods import get_topics_and_descriptions, get_parties_context_of_political_positions
+from util import pop_random_entry
+from voting_aid_methods import get_parties_context_of_political_positions
 
 app = dash.Dash(__name__, external_stylesheets=['/assets/custom.css'])
 
@@ -30,27 +33,86 @@ party_names = {
     "union": "Christlich Demokratische Union Deutschlands/Christlich-Soziale Union in Bayern (CDU/CSU)"
 }
 
-topic_position_box = \
-html.Div([
-    html.Div([
-        dcc.Markdown("**Thema:**", className='inline-block'),
-        dcc.Textarea(
-            id={'type': 'topic-input', 'index': 0},
-            value="",
-            className='inline-block',
-            style={'height': '20px'}
-        )
-    ], className='text-align-left'),
-    html.Div([
-        dcc.Markdown("**Ansicht:**", className='inline-block'),
-        dcc.Textarea(
-            id={'type': 'position-input', 'index': 0},
-            value="",
-            className='inline-block',
-            style={'height': '100px'}
-        )
-    ], className='text-align-left')
-], className='topic-position-box')
+potential_topics_and_positions = {
+    "Unterstützung der Ukraine": "Die Ukraine soll...",
+    "Erneuerbare Energien": "Erneuerbare Energien sollen...",
+    "Bürgergeld": "Das Bürgergeld soll...",
+    "Tempolimit auf Autobahnen": "Ein Tempolimit auf Autobahnen soll...",
+    "Asyl": "Asylsuchende sollen...",
+    "Mietpreisbremse": "Die Mietpreisbremse soll...",
+    "Videoüberwachung": "Die Videoüberwachung an öffentlichen Orten soll...",
+    "Rente": "Die Rente soll...",
+    "Fachkräfte aus dem Ausland": "Fachkräfte...",
+    "Atomkraft": "Die Atomkraft soll...",
+    "Bund und Bildung": "Der Bund soll in der Bildung...",
+    "Rüstungsexporte in Krisengebiete": "Rüstungsexporte sollen...",
+    "Frauenquote": "Die Frauenquote soll...",
+    "Ökologische Landwirtschaft": "Die Landwirtschaft soll...",
+    "AfD Verbot": "Die AfD soll...",
+    "Lieferkettenschutzgesetz": "Das Lieferkettenschutzgesetz soll...",
+    "BAföG": "Das BAföG soll...",
+    "Schuldenbremse": "Die Schuldenbremse soll...",
+    "Klimaziele": "Die Klimaziele sollen...",
+    "Kohleausstieg": "Der Kohleausstieg soll...",
+    "Schwangerschaftsabbruch": "Der Schwangerschaftsabbruch soll...",
+    "Euro": "Der Euro soll...",
+    "Verkehrswende": "Die Verkehrswende soll...",
+    "Volksentscheide": "Volksentscheide sollen...",
+    "Strafrecht für unter 14-Jährige": "Das Strafrecht für ...",
+    "Zölle": "Zölle sollen...",
+    "Zweite Staatsbürgerschaft": "Die zweite Staatsbürgerschaft soll...",
+    "Heizungen": "Heizungen sollen...",
+    "Mindestlohn": "Der Mindestlohn soll...",
+    "Verteidigungsausgaben": "Die Verteidigungsausgaben sollen...",
+    "Entwicklungszusammenarbeit": "Die Entwicklungszusammenarbeit soll...",
+    "Großspenden an Parteien": "Großspenden an Parteien sollen...",
+    "Verbrennungsmotoren": "Verbrennungsmotoren sollen...",
+    "Vermögenssteuer": "Die Vermögenssteuer soll...",
+    "Unternehmenssteuern": "Die Unternehmenssteuern sollen...",
+    "Einkommenssteuer": "Die Einkommenssteuer soll...",
+    "Mehrwertsteuer": "Die Mehrwertsteuer soll...",
+    "Rundfunkbeitrag": "Der Rundfunkbeitrag soll...",
+    "Cannabis": "Cannabis soll...",
+    "Doppelte Staatsbürgerschaft": "Die doppelte Staatsbürgerschaft soll...",
+    "CO2-Preis": "Der CO2-Preis soll...",
+    "Digitalisierung": "Die Digitalisierung soll...",
+    "KI": "Der Einsatz von Künstlicher Intelligenz soll...",
+    "Gesundheit & Pflege": "Das Gesundheitssystem...",
+    "Innere Sicherheit": "Die innere Sicherheit...",
+    "Cyberkriminalität": "Cyberkriminalität...",
+    "Infrastruktur & Verkehr": "Die Verkehrsinfrastruktur...",
+    "Europäische Union": "Die Europäische Union...",
+}
+
+topic_position_create_index = 0
+def get_topic_position_box():
+    global topic_position_create_index
+    topic_position_create_index += 1
+    return \
+        html.Div([
+            html.Div([
+                html.Div([
+                    dcc.Markdown("**Thema:**"),
+                    html.Button('Thema Vorschlagen',
+                                id={'type': 'suggest-topic-button', 'index': topic_position_create_index},
+                                className='suggest-topic-button')
+                ], style={'display': 'flex', 'justify-content': 'space-between'}),
+                dcc.Textarea(
+                    id={'type': 'topic-input', 'index': topic_position_create_index},
+                    value="",
+                    style={'height': '20px'}
+                )
+            ]),
+            html.Div([
+                dcc.Markdown("**Ansicht:**", style={'display': 'flex'}),
+                dcc.Textarea(
+                    id={'type': 'position-input', 'index': topic_position_create_index},
+                    value="",
+                    style={'height': '100px'}
+                )
+            ])
+        ], className='topic-position-box')
+
 
 app.layout = html.Div([
     html.H1("VotingAid"),
@@ -60,7 +122,7 @@ app.layout = html.Div([
             " ist ein Tool, das Ihnen dabei hilft, Ihre politische Position mit den Positionen verschiedener Parteien "
             "zu vergleichen. Derzeit basiert das Tool ausschließlich auf den Parteiprogrammen der jeweiligen Parteien.",
             html.Br(),
-            "Geben Sie Ihre politischen Meinungen in die Thema-Ansicht Box unten ein. 'Thema' steht dabei für eine "
+            "Geben Sie Ihre politischen Meinungen in die Thema-Box unten ein. 'Thema' steht dabei für eine "
             "Kategorie, wie z. B. Klimaschutz, und 'Ansicht' für Ihre spezifischen Meinungen und Lösungsvorschläge "
             "zu diesem Thema. Je präziser Ihre Angaben sind, desto genauer ist das Endergebnis. "
             "Bitte teilen Sie ihre Meinungen in unterschiedliche Themengebiete auf."
@@ -83,11 +145,12 @@ app.layout = html.Div([
 
     ]),
     html.Div([
-        topic_position_box,
+        get_topic_position_box(),
         html.Div([
-            html.P("Klicken Sie auf 'Analysiere' um die LLM analyse zu starten. "
+            html.Em("Klicken Sie auf 'Analysiere' um die LLM analyse zu starten. "
                    "Die Analyse kann einige Zeit in Anspruch nehmen."),
-            html.Button('Erweitere um eine Thema-Ansicht Box', id='add-topic-position-button', n_clicks=0),
+            html.Br(),
+            html.Button('Erweitere die Analyse um ein Thema', id='add-topic-position-button', n_clicks=0),
             html.Button('Analysiere', id='submit-button', n_clicks=0)
         ], style={'text-align': 'center'})
     ], id='topics-positions-container', style={'margin-top': '20px'}),
@@ -100,6 +163,21 @@ app.layout = html.Div([
     )
 ])
 
+
+@app.callback(
+    Output({'type': 'topic-input', 'index': MATCH}, 'value'),
+    Output({'type': 'position-input', 'index': MATCH}, 'value'),
+    Input({'type': 'suggest-topic-button', 'index': MATCH}, 'n_clicks'),
+    State({'type': 'topic-input', 'index': MATCH}, 'value'),
+    State({'type': 'position-input', 'index': MATCH}, 'value'),
+    prevent_initial_call=True
+)
+def suggest_topic(n_clicks, current_topic, current_position):
+    if n_clicks > 0:
+        suggested_topic, suggested_position = pop_random_entry(potential_topics_and_positions)
+        return suggested_topic, suggested_position
+    return current_topic, current_position
+
 @app.callback(
     Output('topics-positions-container', 'children', allow_duplicate=True),
     Input('add-topic-position-button', 'n_clicks'),
@@ -110,7 +188,7 @@ def add_topic_position(n_clicks, children):
     if n_clicks == 0:
         return children
 
-    children.insert(-1, topic_position_box)
+    children.insert(-1, get_topic_position_box())
     return children
 
 def perform_analysis(parties, topics, positions, max_answer_length, output):
@@ -158,7 +236,7 @@ def submit_analysis(n_clicks, topics, positions):
                         html.H4(f"{details['rating']:.2f}%" if details['rating'] % 1 != 0 else f"{int(details['rating'])}%",
                                 className='float-right'),
                     ]),
-                    html.P(details['detailed_answer']),
+                    dcc.Markdown(details['detailed_answer'], style={'text-align': 'left', 'display': 'inline-block'}),
                     html.Div([
                         html.A(f"[{details['metadata'][i]['title']}]", id={'type': 'source-button', 'index': i},
                                href=f"/local-files/{details['metadata'][i]['url']}")

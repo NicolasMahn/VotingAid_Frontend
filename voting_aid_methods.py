@@ -178,7 +178,6 @@ def get_rating_from_response_instructions():
     )
 
 
-
 def get_topics_and_descriptions(political_position):
     response = llm_api_wrapper.basic_prompt(political_position, get_summary_instructions(), temperature=0)
     topics_and_positions = response.split("\n\n")

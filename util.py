@@ -1,4 +1,6 @@
 import os
+import random
+
 import yaml
 
 def extract_code_from_markdown(markown_text: str, type_=None):
@@ -38,3 +40,7 @@ def load_config(config_file=None):
 
     with open(config_file, 'r', encoding='utf-8') as file:
         return yaml.safe_load(file)
+
+def pop_random_entry(d):
+    key = random.choice(list(d.keys()))
+    return key, d.pop(key)

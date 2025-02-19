@@ -20,7 +20,7 @@ em {
 }
 
 textarea {
-    width: 95%;
+    width: calc(100% - 20px);
     padding: 10px;
     font-family: Arial, sans-serif;
     border: 1px solid #ccc;
@@ -36,12 +36,23 @@ div.topic-position-box {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+button.suggest-topic-button {
+    background-color: #163c00;
+    color: #fff;
+}
+
+
 .inline-block {
     display: flex;
     margin-right: 10px;
     margin-top: 0;
-    padding-top: 0;
-    text-align: left;
+    align-items: center;
 }
 
 .text-align-left {
@@ -64,7 +75,7 @@ button {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-button#add-topic-position-button {
+button#add-topic-position-button{
     background-color: #163c00;
     color: #fff;
 }
