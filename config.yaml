@@ -1,0 +1,31 @@
+data_topics:
+  afd:
+    topic_dir: "data/afd"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  bsw:
+    topic_dir: "data/bsw"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  fdp:
+    topic_dir: "data/fdp"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  gruene:
+    topic_dir: "data/gruene"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  linke:
+    topic_dir: "data/linke"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  spd:
+    topic_dir: "data/spd"
+    allowed_domains: [ ]
+    start_urls: [ ]
+  union:
+    topic_dir: "data/union"
+    allowed_domains: []
+    start_urls: []
+
+default_topic: "all"

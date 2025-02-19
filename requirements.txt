@@ -3,3 +3,4 @@ flask
 chromadb
 openai
 tiktoken
+google-genai

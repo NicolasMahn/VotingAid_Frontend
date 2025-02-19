@@ -1,0 +1,111 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    color: #880033;
+}
+
+p {
+    text-align: center;
+}
+
+strong {
+    color: #880033;
+}
+
+em {
+    color: #880033;
+}
+
+textarea {
+    width: 95%;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+div.topic-position-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.inline-block {
+    display: flex;
+    margin-right: 10px;
+    margin-top: 0;
+    padding-top: 0;
+    text-align: left;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-family: Arial, sans-serif;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button#add-topic-position-button {
+    background-color: #163c00;
+    color: #fff;
+}
+
+button#submit-button {
+    background-color: #880033;
+    color: #fff;
+}
+
+div.party-box {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+div.party-box h3 {
+    display: inline-block;
+    font-family: Arial, sans-serif;
+}
+
+div.party-box h3.float-right {
+    float: right;
+    margin-right: 10px;
+}
+
+div.party-box h4 {
+    font-family: Arial, sans-serif;
+    display: inline-block;
+}
+
+div.party-box h4.float-right {
+    float: right;
+    margin-right: 10px;
+}
+
+div.party-box p {
+    font-family: Arial, sans-serif;
+}
+
+div.party-box a {
+    margin-right: 10px;
+    font-family: Arial, sans-serif;
+}
