@@ -59,7 +59,7 @@ def main():
 
 
 def query_rag(query_text: str, topic: str, unique_role: str=None, unique_prompt_template: str=None,
-              debug: bool = False, n_results: int = 2):
+              debug: bool = False, n_results: int = 3):
     # Prepare the DB.
     chroma_client = chromadb.HttpClient(host=CHROMADB_HOST, port=CHROMADB_PORT)
 

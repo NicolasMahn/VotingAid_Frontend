@@ -1,3 +1,5 @@
+from typing import Dict, Union, Any
+
 import llm_api_wrapper
 import query_data
 import concurrent.futures
@@ -240,13 +242,13 @@ def get_party_context_of_political_position(party, topic, position, topic_criter
     return analyze_score(score, position_text, context, party, topic_criteria, recursive_depth)
 
 def analyze_score(score, position, context, party, topic_criteria, recursive_depth=0):
-    max_recursive_depth = 3
+    max_recursive_depth = 1
     p_pcs = ("Meine Politische Meinung: \n" + position + "\n---\n"
              + "Abschnitte aus dem Parteiprogramm: \n" + context + "\n---\n"
              + "Bewertung: " + str(score["rating"]))
 
     if ("detailed_answer" in score and "rating" in score and score["detailed_answer"] is not None
-            and score["rating"] is not None):
+            and score["rating"] != -1):
 
         response = llm_api_wrapper.basic_prompt(p_pcs, is_rating_sufficient_instruction())
         if "wurde richtig bewertet" in response.lower():
@@ -323,7 +325,7 @@ def process_position(i, party, topics, positions, criteria, max_answer_length):
     return topics[i], result
 
 def process_party(party, topics, positions, criteria, max_answer_length):
-    party_score = {}
+    party_score: dict[Union[str, Any], Union[Union[None, int, float], Any]] = {}
     for topic in topics:
         party_score[topic] = None
 
@@ -333,20 +335,24 @@ def process_party(party, topics, positions, criteria, max_answer_length):
             topic, result = future.result()
             party_score[topic] = result
 
+    party_score = get_party_total_score(party_score, topics)
+    return party, party_score
+
+def get_party_total_score(party_score, topics):
     party_score["total"] = -1
-    valid_ratings = [int(party_score[topic]['rating']) for topic in topics
+    valid_ratings = [int(party_score[topic]['rating'] if party_score[topic]['rating'] is not None else -1)
+                     for topic in topics
                      if party_score[topic]['detailed_answer'] is not None and party_score[topic]['rating'] != -1]
     if len(valid_ratings) > 0:
         baseline_score = 15
         party_score["total"] = sum(valid_ratings) / len(valid_ratings)
         if party_score["total"] > baseline_score:
-            valid_ratings = [int(party_score[topic]['rating']) for topic in topics
+            valid_ratings = [int(party_score[topic]['rating'] if party_score[topic]['rating'] is not None else -1)
+                             for topic in topics
                              if party_score[topic]['detailed_answer'] is not None]
             valid_ratings = [r if r != -1 else baseline_score for r in valid_ratings]
             party_score["total"] = sum(valid_ratings) / len(valid_ratings)
-    # print(f"Die {party} ist in deiner politischen Position, {party_score['total']}% an deiner Meinung.")
-    # print()
-    return party, party_score
+    return party_score
 
 def get_parties_context_of_political_positions(parties, topics, positions, max_answer_length=100):
     with concurrent.futures.ThreadPoolExecutor() as executor:
