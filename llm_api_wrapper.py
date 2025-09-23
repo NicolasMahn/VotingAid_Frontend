@@ -15,6 +15,7 @@ PINK = "\033[38;5;205m"
 RESET = "\033[0m"
 
 MAX_TOKENS = {                                          # Price per 1M tokens
+    "gpt-5-mini": 128000,                             # non found
     "default": 128000,
     "gpt-4o": 128000,                                   # 2.5, 1.25, 10.0
     "gpt-4o-mini": 128000,                              # 0.15, 0, 0.6
@@ -33,12 +34,12 @@ model_owner = {
                "learnlm-1.5-pro-experimental"]
 }
 
-DEFAULT_MODEL = "gpt-4o-mini"
+DEFAULT_MODEL = "gpt-5-mini"
 
 def count_context_length(prompt: str, model: str = "default") -> int:
     if model not in MAX_TOKENS or model == "default":
         model = DEFAULT_MODEL
-    if model in model_owner["google"]:
+    if model in model_owner["google"] or model == "gpt-5-mini":
         # Use a different method for Google's models
         return len(prompt.split())  # Example: count words as tokens
     else:
