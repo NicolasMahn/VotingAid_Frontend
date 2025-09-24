@@ -362,6 +362,6 @@ def serve_local_file(filename):
 
 if __name__ == '__main__':
     try:
-        app.run_server(debug=True)
+        app.run(debug=True)
     except OSError as e:
         print(f"An error occurred: {e}")
