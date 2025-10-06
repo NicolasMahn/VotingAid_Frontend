@@ -1,6 +1,6 @@
 dash
 flask
-chromadb
+chromadb == 0.6.3
 openai
 tiktoken
 google-genai
